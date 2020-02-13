@@ -3,30 +3,37 @@ package attackers
 import tower._
 import processing.core.PApplet
 
-class BasicAttacker(cell: Cell) extends Attackers(cell) {
-  val speed = 15
+class BasicAttacker(cell: Cell, sketch: PApplet) extends Attackers(cell, sketch) {
+  //  this.sketch = sketch
+  val speed = 1
+
   var reward = 20
   val winning = 20
-
   var healthPoints = 100
 
-  var x = cell.x
-  var y = cell.y
+  var x: Int = cell.x // Starting point
+  var y: Int = cell.y
 
   val icon = "resources/attackers/zombie.png"
 
   def move() = {
-    x += speed;
+    x = x + speed;
     println("This is x in basic: " + x)
-    if (x > Game.width) {
+    if (x > 700) {
       x = 0;
     }
-
+    display()
   }
 
   def display() {
-    Game.fill(150, 100, 150)
-    Game.rect(x, y, 50, 50);
+    sketch.fill(150, 100, 150)
+    //    sketch.rect(x, y, 50, 50);
+    drawAttacker(this, x, y)
+  }
+
+  private def drawAttacker(attacker: Attackers, x: Int, y: Int): Unit = {
+    val dir: String = attacker.icon
+    sketch.image(sketch.loadImage(dir), x, y)
   }
 
 }

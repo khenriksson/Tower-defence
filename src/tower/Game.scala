@@ -3,13 +3,6 @@ package tower
 import processing.core.{ PApplet, PConstants }
 import attackers._
 
-object Game extends PApplet {
-
-  def main(args: Array[String]) = {
-    PApplet.main("tower.Game")
-  }
-}
-
 class Game extends PApplet {
   val wWidth: Int = 900
   val wHeight: Int = 750
@@ -39,6 +32,9 @@ class Game extends PApplet {
   def mapHeight: Int = map.length
   def mapWidth: Int = map(0).length
 
+  var startPoint = new Cell(0, 500)
+  val base = new BasicAttacker(startPoint, this)
+
   override def setup() = {
     background(255, 255, 50)
 
@@ -50,8 +46,6 @@ class Game extends PApplet {
   }
 
   override def draw() = {
-    var start = new Cell(0, wHeight / 2)
-    val base = new BasicAttacker(start)
 
     textSize(30)
 
@@ -75,9 +69,9 @@ class Game extends PApplet {
       }
     }
 
-    drawAttacker(base, 710, 330)
+    //    drawAttacker(base, 710, 330)
     base.move()
-    base.display();
+    //    base.display();
 
   }
 
@@ -93,11 +87,6 @@ class Game extends PApplet {
     rect(x, y, w, h)
     fill(235, 52, 52)
     text(t, x + 2, y + 30)
-  }
-
-  private def drawAttacker(attacker: Attackers, x: Int, y: Int): Unit = {
-    val dir: String = attacker.icon
-    image(loadImage(dir), x, y)
   }
 
   override def mouseClicked() {
@@ -137,6 +126,12 @@ class Game extends PApplet {
   //      selectedCell = false
   //    }
   //  }
+
+}
+
+object Game extends App {
+
+  PApplet.main("tower.Game")
 
 }
 
