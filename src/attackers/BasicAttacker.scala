@@ -2,14 +2,16 @@ package attackers
 
 import tower._
 import processing.core.PApplet
+import gamemaps.Cell
 
 class BasicAttacker(cell: Cell, sketch: PApplet) extends Attackers(cell, sketch) {
   //  this.sketch = sketch
-  val speed = 1
+  val speed = 10
 
   var reward = 20
   val winning = 20
   var healthPoints = 100
+  val attackDamage = 10
 
   var x: Int = cell.x // Starting point
   var y: Int = cell.y
@@ -18,9 +20,10 @@ class BasicAttacker(cell: Cell, sketch: PApplet) extends Attackers(cell, sketch)
 
   def move() = {
     x = x + speed;
-    println("This is x in basic: " + x)
-    if (x > 700) {
+    //    println("This is x in basic: " + x)
+    if (x > mWidth) {
       x = 0;
+
     }
     display()
   }
