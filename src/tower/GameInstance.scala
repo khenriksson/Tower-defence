@@ -5,6 +5,8 @@ import attackers._
 import tower._
 import scala.collection.mutable.Buffer
 
+// Add cells to Map here
+
 class GameInstance {
   val player = Player
   val attackers: Buffer[Attackers] = Buffer[Attackers]()
