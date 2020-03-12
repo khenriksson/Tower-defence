@@ -45,6 +45,11 @@ abstract class Helper extends PApplet {
 
 abstract class MapCell
 
-class TowerCell extends MapCell
+class TowerCell extends MapCell {
+  //  var tower: Option[Tower] = None
+}
+//object TowerCell extends MapCell
+
 object Route extends MapCell
-object GenerateCell
+object GenerateCell extends MapCell
+object Target extends MapCell

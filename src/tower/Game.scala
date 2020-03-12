@@ -8,7 +8,6 @@ import scala.collection.mutable.Buffer
 
 class Game extends Helper {
 
-  val map = FileReader.parse("resources/gamemaps/first.txt")
   val gameIns = new GameInstance
   val player = gameIns.player
   val sketch = this
@@ -16,16 +15,16 @@ class Game extends Helper {
   var selectedCell: Boolean = false
   var selected = new Cell(0, 0)
 
-  def mapWidth: Int = map.length
-  def mapHeight: Int = map(0).length
+  def mapWidth: Int = gameIns.map.length
+  def mapHeight: Int = gameIns.map(0).length
 
   var startPoint = new Cell(0, 500)
   var towerPoint = new Cell(50, 200)
   val testTower = new BasicTower(towerPoint, this)
   val base = new BasicAttacker(startPoint, this)
+  gameIns.attackers += base
 
   override def setup() = {
-    background(255, 255, 50)
     textSize(30)
     menuBox(topX, topY, boxWidth, topHeight, "Money")
     menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
@@ -33,7 +32,8 @@ class Game extends Helper {
     menuBox(boxWidth * 3, topY, boxWidth, (0.4 * wHeight).toInt, "Towers")
     menuBox(boxWidth * 3, (0.4 * wHeight).toInt, boxWidth, (0.5 * wHeight).toInt, "Upgrades")
     menuBox(boxWidth * 3, (0.9 * wHeight).toInt, boxWidth, (0.1 * wHeight).toInt, "Quit")
-
+    text(player.money.toString, topX + 2, topY + 30 + 60)
+    text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
   }
 
   override def settings() = {
@@ -43,33 +43,34 @@ class Game extends Helper {
 
   override def draw() = {
 
-    for (x <- 0 until 14) {
-      for (y <- 0 until 13) {
-        if (map(x)(y) == '-') fill(255, 255, 255)
-        else if (map(x)(y) == '0') fill(200, 250, 100)
-        else if (map(x)(y) == '1') fill(0, 0, 0)
-        else fill(255, 0, 0)
+    //    for (x <- 0 until 14) {
+    //      for (y <- 0 until 13) {
+    //        if (map(x)(y) == '-') fill(255, 255, 255)
+    //        else if (map(x)(y) == '0') fill(200, 250, 100)
+    //        else if (map(x)(y) == '1') fill(0, 0, 0)
+    //        else fill(255, 0, 0)
+    //
+    //        new Cell(x, y)
+    //        rect(0 + x * 50, 100 + y * 50, 50, 50) // 1 cell size
+    //      }
+    //    }
 
-        new Cell(x, y)
-        rect(0 + x * 50, 100 + y * 50, 50, 50) // 1 cell size
-      }
-    }
+    //    if (gameIns.towers.isEmpty) {
+    //      drawBoard()
+    //    }
+    //    gameIns.attackers.foreach { x =>
+    //
+    //      if (x.move(gameIns.cellToMap)) {
+    //        x.display()
+    //      }
+    //    }
+
+    drawBoard()
 
     for (tower <- 0 until gameIns.towers.length) {
       val t = gameIns.towers(tower)
-      //      println(towers(tower))
-      //      println(t.x + " t.x" + t.y + " t.y")
-      //
-      //      fill(13, 255, 0)
-      //      rect(0 + t.x, topHeight + t.y, 50, 50)
       t.display()
     }
-
-    fill(235, 52, 52)
-    text(player.money.toString, topX + 2, topY + 30 + 60)
-    text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
-
-    //    base.move()
 
   }
 
@@ -92,6 +93,7 @@ class Game extends Helper {
     val mY = mouseY
 
     selected = new Cell(chooseRight(mouseX), chooseRight(mouseY))
+    //    println("chooseRight X   " + chooseRight(mouseX) + "   chooseRight Y   " + chooseRight(mouseY))
     val what = new BasicTower(selected, this)
     if (mouseX > 0 && mouseX < 200 && mouseY < 100 && selectedCell == false) {
       selectedCell = true
@@ -111,7 +113,7 @@ class Game extends Helper {
       selectedCell = true
       if (selectedCell) {
         fill(100, 100, 100)
-        rect(700, 100, (boxWidth * 0.33).toInt, 200);
+        rect(boxWidth * 3 + 5, topY + 100, 50, 50)
         selectedCell = false
       }
     } else if (mouseX > 1 && mouseX < 700 && mouseY > 100 && mouseY < 750) {
@@ -119,12 +121,13 @@ class Game extends Helper {
       // If there is, then it deletes that tower
       selectedCell = true
       if (!gameIns.towers.exists(f => f.location == selected.location)) {
-        val what = new BasicTower(selected, this)
+        //        val what = new BasicTower(selected, this)
         if (selectedCell) {
           gameIns.addTower(selected, what)
-          selected = new Cell(0, 0)
           selectedCell = false
         }
+        //        drawMenu()
+        //        drawBoard()
 
       } else {
         println("In the other one")
@@ -137,6 +140,8 @@ class Game extends Helper {
           selected = new Cell(0, 0)
           selectedCell = false
         }
+        //        drawMenu()
+        //        drawBoard()
       }
     } else {
       selectedCell = false
@@ -152,9 +157,43 @@ class Game extends Helper {
     }
     chosen
   }
-  //  def drawTower(): Unit = {
-  //
-  //  }
+
+  private def drawCell(cell: Cell): Unit = {
+    gameIns.cellToMap.cellType(cell) match {
+      case GenerateCell =>
+        fill(200, 255, 100)
+        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+      case Route =>
+        fill(0, 0, 0)
+        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+      case Target =>
+        fill(255, 0, 0)
+        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+      case _ =>
+        fill(255, 255, 255)
+        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+    }
+  }
+
+  private def drawMenu(): Unit = {
+    menuBox(topX, topY, boxWidth, topHeight, "Money")
+    menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
+    menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
+    fill(13, 255, 0)
+    rect(boxWidth * 3 + 5, topY + 100, 50, 50)
+    fill(235, 52, 52)
+    text(player.money.toString, topX + 2, topY + 30 + 60)
+    text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
+  }
+
+  private def drawBoard() = {
+    drawMenu()
+    for (x <- 0 until mapWidth) {
+      for (y <- 0 until mapHeight) {
+        drawCell(new Cell(x, y))
+      }
+    }
+  }
 
 }
 
