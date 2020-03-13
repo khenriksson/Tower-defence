@@ -24,5 +24,6 @@ abstract class Tower(val cell: Cell, sketch: PApplet) extends Helper {
   override def toString() = {
     "Cell " + cell
   }
+
 }
 

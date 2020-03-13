@@ -6,13 +6,15 @@ import processing.core.PApplet
 import gamemaps.Cell
 
 // Abstract class for the attackers to keep track of everything
-abstract class Attackers(var cell: Cell, sketch: PApplet) extends Helper {
+abstract class Attackers(var cell: Cell) extends Helper {
   val speed: Int
   val winning: Int
   var healthPoints: Int
   val icon: String
   val attackDamage: Int
   var course: Int
+  var x: Int
+  var y: Int
 
   def towerDefense(damage: Int) = {
 
@@ -34,6 +36,6 @@ abstract class Attackers(var cell: Cell, sketch: PApplet) extends Helper {
 
   //  def drawAttacker(attacker: Attackers, x: Int, y: Int): Unit
 
-  def display(): Unit
+  //  def display(): Unit
 
 }

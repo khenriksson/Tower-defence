@@ -4,7 +4,7 @@ import tower._
 import processing.core.PApplet
 import gamemaps._
 
-class BasicAttacker(c: Cell, sketch: PApplet) extends Attackers(c, sketch) {
+class BasicAttacker(c: Cell) extends Attackers(c) {
   //  this.sketch = sketch
   val speed = 10
 
@@ -19,6 +19,10 @@ class BasicAttacker(c: Cell, sketch: PApplet) extends Attackers(c, sketch) {
 
   val icon = "resources/attackers/zombie.png"
 
+  def neighborCells(cell: Int) = {
+    ???
+  }
+
   def move(map: FileToMap) = {
     //    x = x + speed;
     //    //    println("This is x in basic: " + x)
@@ -27,32 +31,8 @@ class BasicAttacker(c: Cell, sketch: PApplet) extends Attackers(c, sketch) {
     //
     //    }
     //    display()
-
-    if (map.getCell(cell.directionCheck(course)) == Route ||
-      map.getCell(cell.directionCheck(course)) == GenerateCell) {
-      cell = cell.directionCheck(course)
-    } else if (map.getCell(cell.directionCheck((course + 1) % 4)) == Route ||
-      map.getCell(cell.directionCheck((course + 1) % 4)) == GenerateCell) {
-      course = (course + 1) % 4
-      cell = cell.directionCheck(course)
-    } else if (map.getCell(cell.directionCheck((4 + course - 1) % 4)) == Route ||
-      map.getCell(cell.directionCheck((4 + course - 1) % 4)) == GenerateCell) {
-      course = (4 + course - 1) % 4
-      cell = cell.directionCheck(course)
-    }
-    true
+    ???
   }
-
-  def display() {
-    sketch.fill(150, 100, 150)
-    sketch.rect(x, y, 50, 50);
-    //    drawAttacker(this, x, y)
-  }
-
-  //  def drawAttacker(attacker: Attackers, x: Int, y: Int): Unit = {
-  //    sketch.fill(13, 255, 0)
-  //    sketch.rect(x, y, 50, 50)
-  //  }
 
 }
 

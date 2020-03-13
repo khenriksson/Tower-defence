@@ -14,6 +14,7 @@ class Game extends Helper {
 
   var selectedCell: Boolean = false
   var selected = new Cell(0, 0)
+  var wave = gameIns.waveNr
 
   def mapWidth: Int = gameIns.map.length
   def mapHeight: Int = gameIns.map(0).length
@@ -21,7 +22,7 @@ class Game extends Helper {
   var startPoint = new Cell(0, 500)
   var towerPoint = new Cell(50, 200)
   val testTower = new BasicTower(towerPoint, this)
-  val base = new BasicAttacker(startPoint, this)
+  val base = new BasicAttacker(startPoint)
   gameIns.attackers += base
 
   override def setup() = {
@@ -30,7 +31,7 @@ class Game extends Helper {
     menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
     menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
     menuBox(boxWidth * 3, topY, boxWidth, (0.4 * wHeight).toInt, "Towers")
-    menuBox(boxWidth * 3, (0.4 * wHeight).toInt, boxWidth, (0.5 * wHeight).toInt, "Upgrades")
+    menuBox(boxWidth * 3, (0.4 * wHeight).toInt, boxWidth, (0.5 * wHeight).toInt, "Messages")
     menuBox(boxWidth * 3, (0.9 * wHeight).toInt, boxWidth, (0.1 * wHeight).toInt, "Quit")
     text(player.money.toString, topX + 2, topY + 30 + 60)
     text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
@@ -70,6 +71,14 @@ class Game extends Helper {
     for (tower <- 0 until gameIns.towers.length) {
       val t = gameIns.towers(tower)
       t.display()
+    }
+
+    for (attacker <- 0 until gameIns.attackers.length) {
+      val t = gameIns.attackers(attacker)
+      //      var x = t.x
+      gameIns.neighborCell(t)
+      //      println(t.x)
+      drawing(t, t.x, t.y)
     }
 
   }
@@ -163,15 +172,23 @@ class Game extends Helper {
       case GenerateCell =>
         fill(200, 255, 100)
         rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 0, 0)
+        text("G", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
       case Route =>
         fill(0, 0, 0)
         rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 0, 0)
+        text("R", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
       case Target =>
         fill(255, 0, 0)
         rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 255, 255)
+        text("T", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
       case _ =>
         fill(255, 255, 255)
         rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 0, 0)
+        text("-", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
     }
   }
 
@@ -194,6 +211,28 @@ class Game extends Helper {
       }
     }
   }
+
+  def drawing(attacker: Attackers, x: Int, y: Int): Unit = {
+    fill(13, 255, 0)
+    rect(attacker.cell.x, attacker.cell.y - 100, 50, 50) // Not moving right now
+
+  }
+
+  private def message(message: String) = {
+    textSize(20)
+    text(message, boxWidth * 3 + 3, (0.4 * wHeight).toInt)
+    textSize(40)
+  }
+
+  //  override def keyPressed() {
+  //    if (key == 'a') {
+  //      drawMenu()
+  //    } else if (key == 'r') {
+  //      this.setup()
+  //    } else if (key == 't') {
+  //      new Game
+  //    }
+  //  }
 
 }
 

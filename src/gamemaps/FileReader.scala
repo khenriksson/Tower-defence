@@ -39,10 +39,10 @@ class FileToMap(map: Array[Array[Char]]) {
 
   def generateCell = {
     val a = for {
-      x <- 0 until height
-      y <- 0 until width
+      x <- 0 until width
+      y <- 0 until height
       if (cells(x)(y) == GenerateCell)
-    } yield new Cell(x * 50, y * 50)
+    } yield new Cell(x, y)
     a.last
   }
 
