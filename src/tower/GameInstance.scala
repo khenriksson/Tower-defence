@@ -12,33 +12,28 @@ class GameInstance {
   val cellToMap = new FileToMap(map)
   val player = Player
   val attackers: Buffer[Attackers] = Buffer[Attackers]()
+  val messages: Buffer[String] = Buffer[String]()
   var towers: Buffer[Tower] = Buffer[Tower]()
   var waveNr = 1
-  //  var spawn = cellToMap.generateCell
+  var spawn = new Cell(cellToMap.generateCell._1, cellToMap.generateCell._2)
+  var gameOver: Boolean = false
 
   def getCell(attacker: Attackers) = {
     cellToMap.getCell(attacker.cell)
   }
 
-  def neighborCell(attacker: Attackers) = {
-    println("first " + cellToMap.cells(attacker.x / 50 + 1)(attacker.y / 50))
-    //    println("second " + cellToMap.cells(attacker.x / 50)(attacker.y / 50 + 1) == Route)
-    //    println("third " + cellToMap.cells(attacker.x / 50)(attacker.y / 50 - 1) == Route)
-    if (cellToMap.cells(attacker.x / 50 + 1)(attacker.y / 50) == Route) {
-      attacker.cell = new Cell(attacker.x / 50 + 1, attacker.y / 50)
-    } else if (cellToMap.cells(attacker.x / 50)(attacker.y / 50 + 1) == Route) {
-      attacker.cell = new Cell(attacker.x / 50, attacker.y / 50 + 1)
-    } else if (cellToMap.cells(attacker.x / 50)(attacker.y / 50 - 1) == Route) {
-      attacker.cell = new Cell(attacker.x / 50, attacker.y / 50 - 1)
+  def deleteMessage() = {
+    if (messages.length > 15) {
+      //      println(messages.toArray.deep.mkString("\n"))
+      println(messages.length)
+      messages.remove(0)
     }
-    //    attacker.cell
   }
 
   def addTower(to: Cell, tower: Tower) {
     println("To X  " + to.x + "   To Y  " + to.y)
     // Check if enough money
     var towerCell = cellToMap.getCell(to).isInstanceOf[TowerCell]
-
     if (towerCell && player.money - tower.price >= 0) {
       // Remove money
       player.removeMoney(tower)
@@ -49,25 +44,21 @@ class GameInstance {
   }
 
   def removeTower(from: Cell) {
-    // How can I get which tower is there?
     val whichTower = towers.filter(p => p.location == from.location)
     player.money += (whichTower.last.price * 0.8).toInt
     towers = towers.filter(p => p.location != from.location)
   }
 
-  //  def incomingWave() = {
-  //    var step = 0
-  //    while (step <= 0) {
-  //      attackers += new BasicAttacker(spawn, this)
-  //    }
-  //    waveNr += 1
-  //  }
-
-  def addAttacker(to: Cell, tower: Attackers) {
-    val spawn = cellToMap.generateCell
-    println(spawn.y + "       spawn y")
+  def addAttacker() = {
     for (i <- 0 until waveNr) {
       attackers += new BasicAttacker(spawn)
     }
+    waveNr += 1
   }
+
+  def removeAttacker(attacker: Attackers) = {
+    attackers -= attacker
+    player.removeHeath(attacker)
+  }
+
 }

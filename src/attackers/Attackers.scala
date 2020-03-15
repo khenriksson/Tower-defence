@@ -20,7 +20,7 @@ abstract class Attackers(var cell: Cell) extends Helper {
 
   }
 
-  def move(map: FileToMap): Boolean
+  def move(): Boolean
 
   def takingDamage(fromTower: Tower): Unit = {
     healthPoints -= fromTower.attackDamage
@@ -33,9 +33,5 @@ abstract class Attackers(var cell: Cell) extends Helper {
   def attack(): Unit = {
     Player.healthPoints -= attackDamage
   }
-
-  //  def drawAttacker(attacker: Attackers, x: Int, y: Int): Unit
-
-  //  def display(): Unit
 
 }

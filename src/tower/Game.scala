@@ -14,19 +14,14 @@ class Game extends Helper {
 
   var selectedCell: Boolean = false
   var selected = new Cell(0, 0)
-  var wave = gameIns.waveNr
+  var wave: Boolean = false
 
   def mapWidth: Int = gameIns.map.length
   def mapHeight: Int = gameIns.map(0).length
 
-  var startPoint = new Cell(0, 500)
-  var towerPoint = new Cell(50, 200)
-  val testTower = new BasicTower(towerPoint, this)
-  val base = new BasicAttacker(startPoint)
-  gameIns.attackers += base
-
   override def setup() = {
-    textSize(30)
+    frameRate(15)
+    textSize(20)
     menuBox(topX, topY, boxWidth, topHeight, "Money")
     menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
     menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
@@ -35,6 +30,8 @@ class Game extends Helper {
     menuBox(boxWidth * 3, (0.9 * wHeight).toInt, boxWidth, (0.1 * wHeight).toInt, "Quit")
     text(player.money.toString, topX + 2, topY + 30 + 60)
     text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
+    text(gameIns.waveNr.toString, boxWidth * 2 + 2, topY + 30 + 60)
+
   }
 
   override def settings() = {
@@ -42,73 +39,75 @@ class Game extends Helper {
 
   }
 
+  def addWave() = {
+    gameIns.addAttacker()
+  }
+
   override def draw() = {
-
-    //    for (x <- 0 until 14) {
-    //      for (y <- 0 until 13) {
-    //        if (map(x)(y) == '-') fill(255, 255, 255)
-    //        else if (map(x)(y) == '0') fill(200, 250, 100)
-    //        else if (map(x)(y) == '1') fill(0, 0, 0)
-    //        else fill(255, 0, 0)
-    //
-    //        new Cell(x, y)
-    //        rect(0 + x * 50, 100 + y * 50, 50, 50) // 1 cell size
-    //      }
-    //    }
-
-    //    if (gameIns.towers.isEmpty) {
-    //      drawBoard()
-    //    }
-    //    gameIns.attackers.foreach { x =>
-    //
-    //      if (x.move(gameIns.cellToMap)) {
-    //        x.display()
-    //      }
-    //    }
-
     drawBoard()
-
-    for (tower <- 0 until gameIns.towers.length) {
-      val t = gameIns.towers(tower)
-      t.display()
-    }
-
-    for (attacker <- 0 until gameIns.attackers.length) {
-      val t = gameIns.attackers(attacker)
-      //      var x = t.x
-      gameIns.neighborCell(t)
-      //      println(t.x)
-      drawing(t, t.x, t.y)
+    drawMessages()
+    try {
+      if (wave) {
+        if (!gameIns.attackers.isEmpty) {
+          gameIns.attackers.foreach(f => {
+            drawing(f)
+            if (f.x < mWidth) f.x += f.speed else gameIns.removeAttacker(f)
+          })
+        }
+      } else if (gameIns.gameOver) {
+        println("Game Over")
+      }
+      for (tower <- 0 until gameIns.towers.length) {
+        val t = gameIns.towers(tower)
+        t.display()
+        if (!gameIns.attackers.isEmpty) {
+          val close = t.findClose(gameIns.attackers)
+          val proj = new Fire(t, close)
+          val projectiles = t.fires
+          projectiles += proj
+          for (fire <- projectiles) {
+            if (fire.x != fire.to.cell.x && fire.y != fire.to.cell.y) {
+              val dir = fire.findDirection(t, close)
+              fire.x += dir._1
+              fire.y += dir._2
+            }
+          }
+        }
+        gameOver()
+      }
+    } catch {
+      case _: Exception => println("Something wrong")
     }
 
   }
 
-  private def menuBox(x: Int, y: Int, w: Int, h: Int, t: String) = {
-    fill(255, 255, 255)
-    rect(x, y, w, h)
-    fill(235, 52, 52)
-    text(t, x + 2, y + 30)
-  }
-
-  private def gameOver = {
+  private def gameOver() = {
     if (!player.isAlive) {
+      gameIns.attackers.clear
+      gameIns.towers.clear
       fill(250, 250, 250)
       rect(0, 0, 900, 750)
+      gameIns.gameOver = true
     }
   }
 
   override def mouseClicked() {
     val mX = mouseX
     val mY = mouseY
+    val outlineX = mouseX / 50
+    val outlineY = mouseY / 50
 
     selected = new Cell(chooseRight(mouseX), chooseRight(mouseY))
-    //    println("chooseRight X   " + chooseRight(mouseX) + "   chooseRight Y   " + chooseRight(mouseY))
-    val what = new BasicTower(selected, this)
+    //    outlineCell(new Cell(mouseX, mouseY))
+    var what: Option[Tower] = Some(new BasicTower(selected, this))
     if (mouseX > 0 && mouseX < 200 && mouseY < 100 && selectedCell == false) {
       selectedCell = true
       if (selectedCell) {
         fill(100, 100, 100)
         rect(0, 0, boxWidth, 100);
+        addWave()
+        gameIns.messages += "Wave incoming"
+        wave = true
       }
     } else if (mouseX > 700 && mouseX < 900 && mouseY > 650 && selectedCell == false) {
       selectedCell = true
@@ -130,27 +129,19 @@ class Game extends Helper {
       // If there is, then it deletes that tower
       selectedCell = true
       if (!gameIns.towers.exists(f => f.location == selected.location)) {
-        //        val what = new BasicTower(selected, this)
         if (selectedCell) {
-          gameIns.addTower(selected, what)
+          gameIns.addTower(selected, what.get)
+          gameIns.messages += "Tower Added"
           selectedCell = false
         }
-        //        drawMenu()
-        //        drawBoard()
-
       } else {
-        println("In the other one")
         selectedCell = true
         // Selecting a tower
         if (selectedCell) {
-          println("Before " + gameIns.towers)
           gameIns.removeTower(selected)
-          println("After " + gameIns.towers)
-          selected = new Cell(0, 0)
+          gameIns.messages += "Tower Removed"
           selectedCell = false
         }
-        //        drawMenu()
-        //        drawBoard()
       }
     } else {
       selectedCell = false
@@ -170,25 +161,25 @@ class Game extends Helper {
   private def drawCell(cell: Cell): Unit = {
     gameIns.cellToMap.cellType(cell) match {
       case GenerateCell =>
-        fill(200, 255, 100)
-        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(100, 255, 100) // Color: Green
+        rect(cell.x * cellSize, topHeight + cell.y * cellSize, cellSize, cellSize)
         fill(255, 0, 0)
-        text("G", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
+        text("G", cell.x * cellSize, 25 + topHeight + cell.y * cellSize)
       case Route =>
-        fill(0, 0, 0)
-        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(0, 0, 0) // Color: Black
+        rect(cell.x * cellSize, topHeight + cell.y * cellSize, cellSize, cellSize)
         fill(255, 0, 0)
-        text("R", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
+        text("R", cell.x * cellSize, 25 + topHeight + cell.y * cellSize)
       case Target =>
-        fill(255, 0, 0)
-        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 0, 0) // Color: Red
+        rect(cell.x * cellSize, topHeight + cell.y * cellSize, cellSize, cellSize)
         fill(255, 255, 255)
-        text("T", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
+        text("T", cell.x * cellSize, 25 + topHeight + cell.y * cellSize)
       case _ =>
-        fill(255, 255, 255)
-        rect(0 + cell.x * 50, 100 + cell.y * 50, 50, 50)
+        fill(255, 255, 255) // Color: White
+        rect(cell.x * cellSize, topHeight + cell.y * cellSize, cellSize, cellSize)
         fill(255, 0, 0)
-        text("-", 0 + cell.x * 50, 25 + 100 + cell.y * 50)
+        text("-", cell.x * cellSize, 25 + topHeight + cell.y * cellSize)
     }
   }
 
@@ -196,11 +187,17 @@ class Game extends Helper {
     menuBox(topX, topY, boxWidth, topHeight, "Money")
     menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
     menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
+    menuBox(boxWidth * 3, (0.4 * wHeight).toInt, boxWidth, (0.5 * wHeight).toInt, "Messages")
     fill(13, 255, 0)
-    rect(boxWidth * 3 + 5, topY + 100, 50, 50)
+    rect(boxWidth * 3 + 5, topY + 100, cellSize, cellSize)
+    fill(100, 100, 0)
+    rect(boxWidth * 3 + 5 + 100, topY + 100, cellSize, cellSize)
     fill(235, 52, 52)
+
     text(player.money.toString, topX + 2, topY + 30 + 60)
     text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
+    text(gameIns.waveNr.toString, boxWidth * 2 + 2, topY + 30 + 60)
+
   }
 
   private def drawBoard() = {
@@ -212,27 +209,37 @@ class Game extends Helper {
     }
   }
 
-  def drawing(attacker: Attackers, x: Int, y: Int): Unit = {
+  def drawing(attacker: Attackers): Unit = {
     fill(13, 255, 0)
-    rect(attacker.cell.x, attacker.cell.y - 100, 50, 50) // Not moving right now
-
+    ellipse(attacker.x, attacker.y + 25, 40, 40) // +25 for getting it to the middle
   }
 
-  private def message(message: String) = {
-    textSize(20)
-    text(message, boxWidth * 3 + 3, (0.4 * wHeight).toInt)
-    textSize(40)
-  }
-
-  //  override def keyPressed() {
-  //    if (key == 'a') {
-  //      drawMenu()
-  //    } else if (key == 'r') {
-  //      this.setup()
-  //    } else if (key == 't') {
-  //      new Game
-  //    }
+  //  def drawingProj(proj: Fire): Unit = {
+  //    fill(13, 255, 0)
+  //    var x = proj.x
+  //    var y = proj.y
+  //    ellipse(x, y + 25, 30, 30) // +25 for getting it to the middle
   //  }
+
+  private def drawMessages() = {
+    for (m <- 0 until gameIns.messages.length) {
+      message(gameIns.messages(m), m * 20)
+    }
+    gameIns.deleteMessage()
+  }
+
+  private def message(message: String, y: Int) = {
+    textSize(20)
+    fill(0, 0, 0)
+    text(message, boxWidth * 3 + 3, (0.4 * wHeight).toInt + 50 + y)
+
+  }
+
+  private def outlineCell(cell: Cell) = {
+    noFill()
+    stroke(204, 102, 0)
+    rect(cell.x * cellSize, cell.y, cellSize, cellSize)
+  }
 
 }
 

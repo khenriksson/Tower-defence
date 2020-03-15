@@ -5,7 +5,7 @@ import processing.core.PApplet
 import gamemaps._
 import scala.collection.mutable.Buffer
 
-class BasicAttacker(c: Cell) extends Attackers(c) {
+class AdnvancedAttacker(c: Cell) extends Attackers(c) {
   val speed = 5
   val winning = 20
   val attackDamage = 10

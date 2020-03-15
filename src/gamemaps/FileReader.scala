@@ -5,6 +5,7 @@ import scala.collection.mutable.Buffer
 import java.io.FileNotFoundException
 import java.io.IOException
 import tower._
+import java.io.File
 
 object FileReader {
 
@@ -24,6 +25,16 @@ object FileReader {
     }
     results.toArray
   }
+
+  def getListOfFiles(dir: String): List[File] = {
+    val d = new File(dir)
+    if (d.exists && d.isDirectory) {
+      d.listFiles.filter(_.isFile).toList
+    } else {
+      List[File]()
+    }
+  }
+
 }
 
 class FileToMap(map: Array[Array[Char]]) {
@@ -35,6 +46,7 @@ class FileToMap(map: Array[Array[Char]]) {
     case '0' => GenerateCell
     case '1' => Route
     case '2' => Target
+    case 'x' => Menu
   })
 
   def generateCell = {
@@ -42,12 +54,18 @@ class FileToMap(map: Array[Array[Char]]) {
       x <- 0 until width
       y <- 0 until height
       if (cells(x)(y) == GenerateCell)
-    } yield new Cell(x, y)
+
+    } yield {
+      //      println(cells.deep.mkString("\n"))
+      (x * 50, y * 50 + 100)
+    }
+
     a.last
   }
 
   // Breaks at 650 y
   // Doesn't break at x
+  // This one gets the cellType from the cells directly
   def cellType(cell: Cell): MapCell = {
     cells(cell.x)(cell.y) // 14, 13
   }

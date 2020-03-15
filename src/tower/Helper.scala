@@ -1,6 +1,7 @@
 package tower
 
 import processing.core.PApplet
+import scala.collection.mutable.Buffer
 
 // Rename Helper to make it more clear what it does
 // Describe in more detail
@@ -18,6 +19,7 @@ import processing.core.PApplet
 abstract class Helper extends PApplet {
   val wWidth: Int = 900
   val wHeight: Int = 750
+  val cellSize: Int = 50
 
   // Sidemenu
   val menuWidth = 200
@@ -41,6 +43,13 @@ abstract class Helper extends PApplet {
   // MapWidth and Height
   val mWidth = boxWidth * 3 - 50
   val mHeight = wHeight
+
+  def menuBox(x: Int, y: Int, w: Int, h: Int, t: String) = {
+    fill(255, 255, 255)
+    rect(x, y, w, h)
+    fill(235, 52, 52)
+    text(t, x + 2, y + 30)
+  }
 }
 
 abstract class MapCell
@@ -48,8 +57,8 @@ abstract class MapCell
 class TowerCell extends MapCell {
   //  var tower: Option[Tower] = None
 }
-//object TowerCell extends MapCell
 
 object Route extends MapCell
 object GenerateCell extends MapCell
 object Target extends MapCell
+object Menu extends MapCell
