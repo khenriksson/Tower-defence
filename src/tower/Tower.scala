@@ -17,6 +17,7 @@ abstract class Tower(val cell: Cell, sketch: PApplet) extends Helper {
   var x: Int = cell.x // Starting point
   var y: Int = cell.y
   val location = (x, y)
+  var target: Option[Attackers] = None
 
   def attack(attacker: Attackers): Unit
 
@@ -26,8 +27,10 @@ abstract class Tower(val cell: Cell, sketch: PApplet) extends Helper {
     "Cell " + cell
   }
 
-  def findClose(arr: Buffer[Attackers]): Attackers = {
-    arr.map(f => (f, f.cell.distance(this.cell))).minBy(_._2)._1
+  def findClose(arr: Buffer[Attackers]): Unit = {
+    if (!target.isDefined && !arr.isEmpty) {
+      target = Some(arr.map(f => (f, f.cell.distance(this.cell))).minBy(_._2)._1)
+    } else None
   }
 
 }

@@ -17,14 +17,10 @@ class GameInstance {
   var waveNr = 1
   var spawn = new Cell(cellToMap.generateCell._1, cellToMap.generateCell._2)
   var gameOver: Boolean = false
-
-  def getCell(attacker: Attackers) = {
-    cellToMap.getCell(attacker.cell)
-  }
+  var fires = Buffer[Fire]()
 
   def deleteMessage() = {
-    if (messages.length > 15) {
-      //      println(messages.toArray.deep.mkString("\n"))
+    if (messages.length > 13) {
       println(messages.length)
       messages.remove(0)
     }
@@ -58,7 +54,13 @@ class GameInstance {
 
   def removeAttacker(attacker: Attackers) = {
     attackers -= attacker
-    player.removeHeath(attacker)
+    player.removeHealth(attacker)
+  }
+
+  def removeFire(fire: Fire) = {
+    if (fire.time > fire.time + 4) {
+      fires -= fire
+    }
   }
 
 }

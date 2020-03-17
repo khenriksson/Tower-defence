@@ -2,6 +2,7 @@ package tower
 
 import processing.core.PApplet
 import scala.collection.mutable.Buffer
+import java.util.Calendar
 
 // Rename Helper to make it more clear what it does
 // Describe in more detail
@@ -25,30 +26,43 @@ abstract class Helper extends PApplet {
   val menuWidth = 200
 
   // Top menu
-  val topY = 0
+  val topY = 650
   val topX = 0
   val topWidth = wWidth
   val topHeight = 100
 
   // Dynamic to each other
 
-  val menuHeight = wHeight - topHeight // topMenu
+  val menuHeight = 325
 
   // Towermenu, containing all the towers visible
   val menuY = wHeight + topHeight // Sidemenu
 
   // A width for the boxes in the top
-  val boxWidth = (wWidth - menuWidth) / 3
+  val boxWidth = 225
 
   // MapWidth and Height
-  val mWidth = boxWidth * 3 - 50
-  val mHeight = wHeight
+  val mWidth = 700
+  val mHeight = 650
 
+  /**
+   * Used to create a box
+   * @param x position on the grid
+   * @param y position on the grid
+   * @param w the width of the box
+   * @param h the height of the box
+   * @param t the text in the box
+   */
   def menuBox(x: Int, y: Int, w: Int, h: Int, t: String) = {
     fill(255, 255, 255)
     rect(x, y, w, h)
     fill(235, 52, 52)
     text(t, x + 2, y + 30)
+  }
+
+  def getTime = {
+    val now = Calendar.getInstance();
+    now.get(Calendar.MINUTE) * 60 + now.get(Calendar.SECOND)
   }
 }
 

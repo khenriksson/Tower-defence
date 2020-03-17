@@ -18,7 +18,7 @@ object Player extends Helper {
     money -= tower.price
   }
 
-  def removeHeath(attacker: Attackers) = {
+  def removeHealth(attacker: Attackers) = {
     healthPoints -= attacker.attackDamage
   }
 

@@ -46,7 +46,6 @@ class FileToMap(map: Array[Array[Char]]) {
     case '0' => GenerateCell
     case '1' => Route
     case '2' => Target
-    case 'x' => Menu
   })
 
   def generateCell = {
@@ -57,7 +56,7 @@ class FileToMap(map: Array[Array[Char]]) {
 
     } yield {
       //      println(cells.deep.mkString("\n"))
-      (x * 50, y * 50 + 100)
+      (x * 50, y * 50)
     }
 
     a.last
@@ -71,7 +70,7 @@ class FileToMap(map: Array[Array[Char]]) {
   }
 
   def getCell(cell: Cell): MapCell = {
-    cells(cell.x / 50)((cell.y - 100) / 50)
+    cells(cell.x / 50)((cell.y) / 50)
   }
 
 }
