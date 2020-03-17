@@ -12,13 +12,13 @@ class Cell(val x: Int, val y: Int) {
 
   val location = (x, y)
 
-  //  def directionCheck(direction: Int): Cell = {
-  //    direction match {
-  //      case 0 => new Cell(y + 1, x)
-  //      case 1 => new Cell(y, x + 1)
-  //      case 2 => new Cell(y - 1, x)
-  //      case 3 => new Cell(y, x - 1)
-  //    }
-  //  }
+  def directionCheck(direction: Int): Cell = {
+    direction match {
+      case 0 => new Cell(x + 1, y)
+      case 1 => new Cell(x, y + 1)
+      case 2 => new Cell(x - 1, y)
+      case 3 => new Cell(x, y - 1)
+    }
+  }
 }
 

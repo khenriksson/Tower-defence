@@ -1,6 +1,7 @@
 package attackers
 
 import tower._
+import gamemaps._
 import processing.core.PApplet
 import gamemaps._
 import scala.collection.mutable.Buffer
@@ -21,31 +22,20 @@ class BasicAttacker(c: Cell) extends Attackers(c) {
 
   val icon = "resources/attackers/zombie.png"
 
-  def neighborCells(cell: Int) = {
-    ???
-  }
-
-  def move(): Boolean = {
-    //    x = x + speed;
-    //    //    println("This is x in basic: " + x)
-    //    if (x > mWidth) {
-    //      x = 0;
-    //
-    //    }
-    //    display()
-    //    if (moving) {
-    //    while (x < wWidth) {
-    //      x += speed
-    //    }
-    //      if (x == 750) moving = false
-    //    }
+  def move(map: FileToMap): Boolean = {
+    if (healthPoints < 0) return false
+    if (map.cellType(cell.directionCheck(course)) == Route) {
+      cell = cell.directionCheck(course)
+    } else if (map.cellType(cell.directionCheck((course + 1) % 4)) == Route) {
+      course = (course + 1) % 4
+      cell = cell.directionCheck(course)
+    } else if (map.cellType(cell.directionCheck(4 + (course + 1) % 4)) == Route) {
+      course = 4 + (course + 1) % 4
+      cell = cell.directionCheck(course)
+    }
     true
+
   }
-
-  //  def isHit = {
-  //
-  //  }
-
 }
 
 // CreditsStephen Challener (Redshrike), hosted by OpenGameArt.org

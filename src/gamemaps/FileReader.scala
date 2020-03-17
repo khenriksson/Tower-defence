@@ -55,10 +55,8 @@ class FileToMap(map: Array[Array[Char]]) {
       if (cells(x)(y) == GenerateCell)
 
     } yield {
-      //      println(cells.deep.mkString("\n"))
       (x * 50, y * 50)
     }
-
     a.last
   }
 

@@ -25,26 +25,12 @@ class DeprecatedCode {
   //    }
   //  }
 
-  //    if (gameIns.player.isAlive) {
-  //      try {
-  //        if (wave) {
-  //          if (!gameIns.attackers.isEmpty) {
-  //            gameIns.attackers.foreach(f => {
-  //              drawing(f)
-  //              if (f.x < mWidth) f.x += f.speed else gameIns.removeAttacker(f)
-  //            })
-  //          }
-  //        } else if (gameIns.gameOver) {
-  //          println("Game Over")
-  //        }
-  //
-  //      } catch {
-  //        case _: Exception => println("Something wrong")
-  //      }
-
   //
   //    } else {
   //      gameOver()
   //    }
   ???
+
+  //  if current.x && current.y getCell is route continue
+  //  else find another way
 }
