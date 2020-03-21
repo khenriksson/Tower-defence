@@ -11,7 +11,7 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   val healthPoints: Int = 100
   val range: Int = 300
   val attackSpeed: Int = 1
-  val attackDamage: Int = 50
+  val attackDamage: Int = 10
   val icon = "resources/attackers/zombie.png"
   var addX = cell.x
   var addY = cell.y
@@ -27,11 +27,12 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   }
 
   def attack(attacker: Attackers) = {
-    println(cell.distance(attacker.cell) + " distance")
-    val proj = new Fire(this, target.get)
-    proj.findDirection(proj.from, proj.to)
-    fire(proj)
+    //    println(cell.distance(attacker.cell) + " distance")
+    //    val proj = new Fire(this, target.get)
+    //    proj.findDirection(proj.from, proj.to)
+    //    fire(proj)
     attacker.takingDamage(this)
+    println(attacker.healthPoints)
     println("inside")
 
   }

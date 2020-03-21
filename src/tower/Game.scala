@@ -51,17 +51,17 @@ class Game extends Helper {
         t.display()
         if (!gameIns.attackers.isEmpty) {
           t.findClose(gameIns.attackers)
-          //          if (t.target.isDefined) {
-          //            if (!t.target.get.isDead()) t.attack(t.target.get)
-          //            t.fire()
-          //            println(t.target)
-          //          if (t.target.isDefined) {
-          //            val fire = new Fire(t, t.target.get)
-          //            if (fire.x != t.target.get.cell.x && fire.y != t.target.get.cell.y) {
-          //              fire.add()
-          //              drawProj(fire)
-          //            }
-          //          }
+          if (t.target.isDefined) {
+            if (!t.target.get.isDead()) t.attack(t.target.get)
+            //            t.fire()
+            //            println(t.target)
+            //          if (t.target.isDefined) {
+            //            val fire = new Fire(t, t.target.get)
+            //            if (fire.x != t.target.get.cell.x && fire.y != t.target.get.cell.y) {
+            //              fire.add()
+            //              drawProj(fire)
+            //            }
+          }
         }
       }
       if (wave) {

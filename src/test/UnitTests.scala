@@ -35,6 +35,12 @@ class UnitTests extends AnyFunSuite {
     assert(game.gameIns.towers.isEmpty)
   }
 
+  test("Attackers take damage") {
+    val attackerHealth = attacker.healthPoints
+    attacker.takingDamage(tower)
+    assert(attacker.healthPoints == (attackerHealth - tower.attackDamage))
+  }
+
   //  test("Map should be of correct size") {
   //    cancel()
   //    val src = Source.fromFile("resources/gamemaps/first.txt")

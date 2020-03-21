@@ -32,7 +32,9 @@ abstract class Attackers(var cell: Cell) extends Helper {
     map.cellType(cell.directionCheck(course))
   }
 
+  // DO NOT TOUCH
   def move(map: FileToMap): Boolean = {
+    if (isDead) return false
     if (map.cellType(cell.directionCheck(course % 4)) == Route ||
       map.cellType(cell.directionCheck(course % 4)) == GenerateCell) {
       cell = cell.directionCheck(course)
