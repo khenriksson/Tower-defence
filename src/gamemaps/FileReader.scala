@@ -9,8 +9,6 @@ import java.io.File
 
 object FileReader {
 
-  var map: Array[Array[Char]] = Array[Array[Char]]()
-
   def parse(directory: String): Array[Array[Char]] = {
     val results = Buffer[Array[Char]]()
     try {
@@ -53,9 +51,8 @@ class FileToMap(map: Array[Array[Char]]) {
       x <- 0 until width
       y <- 0 until height
       if (cells(x)(y) == GenerateCell)
-
     } yield {
-      (x * 50, y * 50)
+      new Cell(x, y)
     }
     a.last
   }
@@ -68,7 +65,7 @@ class FileToMap(map: Array[Array[Char]]) {
   }
 
   def getCell(cell: Cell): MapCell = {
-    cells(cell.x / 50)((cell.y) / 50)
+    cells(cell.x / 50)(cell.y / 50)
   }
 
 }

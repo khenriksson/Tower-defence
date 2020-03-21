@@ -25,23 +25,6 @@ class AdvancedAttacker(c: Cell) extends Attackers(c) {
     ???
   }
 
-  def move(): Boolean = {
-    //    x = x + speed;
-    //    //    println("This is x in basic: " + x)
-    //    if (x > mWidth) {
-    //      x = 0;
-    //
-    //    }
-    //    display()
-    //    if (moving) {
-    //    while (x < wWidth) {
-    //      x += speed
-    //    }
-    //      if (x == 750) moving = false
-    //    }
-    true
-  }
-
   //  def isHit = {
   //
   //  }

@@ -19,6 +19,7 @@ object Player extends Helper {
   }
 
   def removeHealth(attacker: Attackers) = {
+    println(healthPoints + "   healthpoints")
     healthPoints -= attacker.attackDamage
   }
 

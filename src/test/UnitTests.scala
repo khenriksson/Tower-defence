@@ -20,7 +20,7 @@ class UnitTests extends AnyFunSuite {
   val attacker = new BasicAttacker(cell)
 
   test("A tower should be added to the game instance array") {
-    game.gameIns.addTower(cell, tower)
+    game.gameIns.addTower(tower)
     assert(!game.gameIns.towers.isEmpty)
   }
 
@@ -30,7 +30,7 @@ class UnitTests extends AnyFunSuite {
   }
 
   test("Adding and removing a tower should assert the towers empty") {
-    game.gameIns.addTower(cell, tower)
+    game.gameIns.addTower(tower)
     game.gameIns.removeTower(cell)
     assert(game.gameIns.towers.isEmpty)
   }
@@ -54,6 +54,7 @@ class UnitTests extends AnyFunSuite {
     files.foreach({
       f =>
         try {
+          println(f.length + " f.length")
           val save = Buffer[Array[Char]]()
           val bufferedSource = Source.fromFile(f)
           for (line <- bufferedSource.getLines()) {

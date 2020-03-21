@@ -15,27 +15,28 @@ class GameInstance {
   val messages: Buffer[String] = Buffer[String]()
   var towers: Buffer[Tower] = Buffer[Tower]()
   var waveNr = 1
-  var spawn = new Cell(cellToMap.generateCell._1, cellToMap.generateCell._2)
-  var gameOver: Boolean = false
+  var spawn = cellToMap.generateCell
+  var gßmeOver: Boolean = false
   var fires = Buffer[Fire]()
 
   def deleteMessage() = {
     if (messages.length > 13) {
-      println(messages.length)
+      //      println(messages.length)
       messages.remove(0)
     }
   }
 
-  def addTower(to: Cell, tower: Tower) {
-    println("To X  " + to.x + "   To Y  " + to.y)
+  def addTower(tower: Tower) {
+    //    println("To X  " + to.x + "   To Y  " + to.y)
     // Check if enough money
-    var towerCell = cellToMap.getCell(to).isInstanceOf[TowerCell]
+    var towerCell = cellToMap.getCell(tower.cell).isInstanceOf[TowerCell]
     if (towerCell && player.money - tower.price >= 0) {
       // Remove money
       player.removeMoney(tower)
       towers += tower
+      //      println(tower.name)
     } else {
-      println("Not available")
+      messages += "Not enough money"
     }
   }
 
@@ -46,7 +47,7 @@ class GameInstance {
   }
 
   def addAttacker() = {
-    for (i <- 0 until waveNr) {
+    for (i <- 0 until (waveNr * 1.5).toInt) {
       attackers += new BasicAttacker(spawn)
     }
     waveNr += 1
@@ -54,13 +55,13 @@ class GameInstance {
 
   def removeAttacker(attacker: Attackers) = {
     attackers -= attacker
-    player.removeHealth(attacker)
+    //    player.removeHealth(attacker)
   }
 
-  def removeFire(fire: Fire) = {
-    if (fire.time > fire.time + 4) {
-      fires -= fire
-    }
-  }
+  //  def removeFire(fire: Fire) = {
+  //    if (fire.time > fire.time + 4) {
+  //      fires -= fire
+  //    }
+  //  }
 
 }

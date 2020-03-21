@@ -13,14 +13,6 @@ abstract class Attackers(var cell: Cell) extends Helper {
   val icon: String
   val attackDamage: Int
   var course: Int
-  var x: Int
-  var y: Int
-
-  def towerDefense(damage: Int) = {
-
-  }
-
-  def move(map: FileToMap): Boolean
 
   def takingDamage(fromTower: Tower): Unit = {
     healthPoints -= fromTower.attackDamage
@@ -31,7 +23,33 @@ abstract class Attackers(var cell: Cell) extends Helper {
   }
 
   def attack(): Unit = {
-    Player.healthPoints -= attackDamage
+    if (!isDead) {
+      Player.healthPoints -= attackDamage
+    }
+  }
+
+  def checkDirection(map: FileToMap, course: Int) = {
+    map.cellType(cell.directionCheck(course))
+  }
+
+  def move(map: FileToMap): Boolean = {
+    if (map.cellType(cell.directionCheck(course % 4)) == Route ||
+      map.cellType(cell.directionCheck(course % 4)) == GenerateCell) {
+      cell = cell.directionCheck(course)
+    } else if (map.cellType(cell.directionCheck((course + 1) % 4)) == Route ||
+      map.cellType(cell.directionCheck((course + 1) % 4)) == GenerateCell) {
+      course = (course + 1) % 4
+      cell = cell.directionCheck(course)
+    } else if (map.cellType(cell.directionCheck((4 + course - 1) % 4)) == Route ||
+      map.cellType(cell.directionCheck(4 + (course - 1) % 4)) == GenerateCell) {
+      course = (4 + course - 1) % 4
+      cell = cell.directionCheck(course)
+    } else if (map.cellType(cell.directionCheck(course)) == Target || map.cellType(cell.directionCheck((course + 1) % 4)) == Target || map.cellType(cell.directionCheck((4 + course - 1))) == Target) {
+      attack()
+      healthPoints = 0
+      return false
+    }
+    true
   }
 
 }

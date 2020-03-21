@@ -1,6 +1,6 @@
 package tower
 
-import processing.core.{ PApplet, PConstants }
+import processing.core.{ PApplet }
 import attackers._
 import gamemaps._
 
@@ -10,17 +10,19 @@ class Game extends Helper {
 
   val gameIns = new GameInstance
   val player = gameIns.player
-  val sketch = this
+
+  //    image(icon, attacker.cell.x, attacker.cell.y)
 
   var selectedCell: Boolean = false
   var selected = new Cell(0, 0)
   var wave: Boolean = false
+  var what: Option[Tower] = None
 
   def mapWidth: Int = gameIns.map.length
   def mapHeight: Int = gameIns.map(0).length
 
   override def setup() = {
-    frameRate(15)
+    frameRate(10)
     textSize(20)
     menuBox(topX, topY, boxWidth, topHeight, "Money")
     menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
@@ -44,32 +46,43 @@ class Game extends Helper {
     drawMessages()
 
     try {
+      for (tower <- 0 until gameIns.towers.length) {
+        val t = gameIns.towers(tower)
+        t.display()
+        if (!gameIns.attackers.isEmpty) {
+          t.findClose(gameIns.attackers)
+          //          if (t.target.isDefined) {
+          //            if (!t.target.get.isDead()) t.attack(t.target.get)
+          //            t.fire()
+          //            println(t.target)
+          //          if (t.target.isDefined) {
+          //            val fire = new Fire(t, t.target.get)
+          //            if (fire.x != t.target.get.cell.x && fire.y != t.target.get.cell.y) {
+          //              fire.add()
+          //              drawProj(fire)
+          //            }
+          //          }
+        }
+      }
       if (wave) {
         if (!gameIns.attackers.isEmpty) {
           gameIns.attackers.foreach(f => {
-            drawing(f)
-            if (f.x < mWidth) f.x += f.speed else gameIns.removeAttacker(f)
+            if (f.move(gameIns.cellToMap)) drawing(f) else gameIns.removeAttacker(f)
+
           })
         }
-      } else if (gameIns.gameOver) {
+      } else {
         gameOver()
       }
-
     } catch {
       case _: Exception => println("Something wrong")
-    }
-
-    for (tower <- 0 until gameIns.towers.length) {
-      val t = gameIns.towers(tower)
-      t.display()
     }
 
   }
 
   override def mouseClicked() {
-
     selected = new Cell(chooseRight(mouseX), chooseRight(mouseY))
-    var what: Option[Tower] = Some(new BasicTower(selected, this))
+
     if (mouseX > 0 && mouseX < boxWidth && mouseY > topY && selectedCell == false) {
       selectedCell = true
       if (selectedCell) {
@@ -79,24 +92,39 @@ class Game extends Helper {
         gameIns.messages += "Wave incoming"
         wave = true
       }
-    } else if (mouseX > mWidth && mouseX < wWidth && mouseY > 0 && mouseY < menuHeight) {
+    } else if (mouseX > 705 && mouseX < 755 && mouseY > 50 && mouseY < 100) {
       // Selecting a tower
       selectedCell = true
       if (selectedCell) {
+        rect(705, 50, 50, 50)
+        what = Some(new BasicTower(selected, this))
+        selectedCell = false
+      }
+    } else if (mouseX > 755 && mouseX < 805 && mouseY > 50 && mouseY < 100) {
+      // Selecting a tower
+      selectedCell = true
+      if (selectedCell) {
+        rect(755, 50, 50, 50)
+        what = Some(new AdvanceTower(selected, this))
         selectedCell = false
       }
     } else if (mouseX > 0 && mouseX < 700 && mouseY > 0 && mouseY < mHeight) {
       // This function checks whether there's a tower in the location already
       // If there is, then it deletes that tower
       selectedCell = true
+
       if (!gameIns.towers.exists(f => f.location == selected.location)) {
-        if (selectedCell) {
-          gameIns.addTower(selected, what.get)
+        if (selectedCell && what.isDefined) {
+          println(what.get.location + " before")
+          what.get.cell = selected
+          what.get.location = selected.location
+          println(what.get.location + " after")
+          gameIns.addTower(what.get)
           gameIns.messages += "Tower Added"
           selectedCell = false
+          what = None
         }
       } else {
-        selectedCell = true
         // Selecting a tower
         if (selectedCell) {
           gameIns.removeTower(selected)
@@ -120,27 +148,23 @@ class Game extends Helper {
   }
 
   private def drawCell(cell: Cell): Unit = {
+    //    val icon = loadImage("resources/grass.png")
+    //    icon.resize(50, 50)
     gameIns.cellToMap.cellType(cell) match {
       case GenerateCell =>
         fill(100, 255, 100) // Color: Green
         rect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize)
-        fill(255, 0, 0)
-        text("G", cell.x * cellSize, 25 + cell.y * cellSize)
       case Route =>
         fill(0, 0, 0) // Color: Black
         rect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize)
-        fill(255, 0, 0)
-        text("R", cell.x * cellSize, 25 + cell.y * cellSize)
       case Target =>
         fill(255, 0, 0) // Color: Red
         rect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize)
-        fill(255, 255, 255)
-        text("T", cell.x * cellSize, 25 + cell.y * cellSize)
+
       case _ =>
         fill(255, 255, 255) // Color: White
         rect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize)
-        fill(255, 0, 0)
-        text("-", cell.x * cellSize, 25 + cell.y * cellSize)
+      //        image(icon, cell.x, cell.y)
     }
   }
 
@@ -156,6 +180,11 @@ class Game extends Helper {
     rect(boxWidth * 3 + 5, topY + 100, cellSize, cellSize)
     fill(100, 100, 0)
     rect(boxWidth * 3 + 5 + 100, topY + 100, cellSize, cellSize)
+
+    fill(102, 255, 102)
+    rect(705, 50, cellSize, cellSize)
+    fill(0, 153, 0)
+    rect(755, 50, cellSize, cellSize)
     fill(235, 52, 52)
 
     text(player.money.toString, topX + 2, topY + 30 + 60)
@@ -173,10 +202,10 @@ class Game extends Helper {
   }
 
   def drawProj(fire: Fire): Unit = {
-    if (!gameIns.fires.isEmpty) {
-      fill(13, 255, 0)
-      ellipse(fire.x, fire.y + 25, 40, 40) // +25 for getting it to the middle
-    }
+
+    fill(13, 255, 0)
+    ellipse(fire.x + 25, fire.y + 25, 40, 40) // +25 for getting it to the middle
+
   }
 
   /**
@@ -185,8 +214,15 @@ class Game extends Helper {
    */
   def drawing(attacker: Attackers): Unit = {
     fill(13, 255, 0)
-    ellipse(attacker.x, attacker.y + 25, 40, 40) // +25 for getting it to the middle
+    ellipse(attacker.cell.x * 50 + 25, attacker.cell.y * 50 + 25, 40, 40) // +25 for getting it to the middle
+    //    val icon = loadImage(attacker.icon)
+    //    image(icon, attacker.cell.x, attacker.cell.y)
   }
+
+  //  def drawSome[T <% Helper](thing: T) {
+  //    fill(13, 255, 0)
+  //    ellipse(thing.cell.x * 50 + 1, attacker.cell.y * 50 + 1, 40, 40)
+  //  }
 
   /** Drawing the board  */
   private def drawBoard() = {

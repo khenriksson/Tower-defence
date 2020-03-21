@@ -5,7 +5,8 @@ import attackers._
 import gamemaps._
 import scala.collection.mutable.Buffer
 
-abstract class Tower(val cell: Cell, sketch: PApplet) extends Helper {
+abstract class Tower(var cell: Cell, sketch: PApplet) extends Helper {
+  val name: String
   val price: Int
   val healthPoints: Int
   val range: Int
@@ -14,14 +15,15 @@ abstract class Tower(val cell: Cell, sketch: PApplet) extends Helper {
   val attackSpeed: Int
   var fires = Buffer[Fire]()
 
-  var x: Int = cell.x // Starting point
-  var y: Int = cell.y
-  val location = (x, y)
+  //  var x: Int = cell.x // Starting point
+  //  var y: Int = cell.y
+  var location = (cell.x, cell.y)
   var target: Option[Attackers] = None
 
   def attack(attacker: Attackers): Unit
 
   def display(): Unit
+  def fire(fire: Fire): Unit
 
   override def toString() = {
     "Cell " + cell

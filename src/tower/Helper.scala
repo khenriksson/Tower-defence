@@ -75,4 +75,4 @@ class TowerCell extends MapCell {
 object Route extends MapCell
 object GenerateCell extends MapCell
 object Target extends MapCell
-object Menu extends MapCell
+object Wall extends MapCell
