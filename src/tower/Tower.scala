@@ -9,14 +9,14 @@ abstract class Tower(var cell: Cell, sketch: PApplet) extends Helper {
   val name: String
   val price: Int
   val healthPoints: Int
-  val range: Int
-  //  def icon: String
-  val attackDamage: Int
   val attackSpeed: Int
-  var fires = Buffer[Fire]()
+  val levelsMapped: Map[Int, Int]
 
-  //  var x: Int = cell.x // Starting point
-  //  var y: Int = cell.y
+  // Modified variables
+  var range: Int
+  var fires = Buffer[Fire]()
+  var attackDamage: Int
+  var level: Int
   var location = (cell.x, cell.y)
   var target: Option[Attackers] = None
 
@@ -29,10 +29,12 @@ abstract class Tower(var cell: Cell, sketch: PApplet) extends Helper {
     "Cell " + cell
   }
 
+  def levelUp() = level += 1
+
   def findClose(arr: Buffer[Attackers]): Unit = {
     if (!target.isDefined && !arr.isEmpty) {
       target = Some(arr.map(f => (f, f.cell.distance(this.cell))).minBy(_._2)._1)
-    } else None
+    } else target = None
   }
 
 }

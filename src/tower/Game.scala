@@ -3,6 +3,7 @@ package tower
 import processing.core.{ PApplet }
 import attackers._
 import gamemaps._
+import sprites._
 
 import scala.collection.mutable.Buffer
 
@@ -16,29 +17,27 @@ class Game extends Helper {
   var selectedCell: Boolean = false
   var selected = new Cell(0, 0)
   var wave: Boolean = false
-  var what: Option[Tower] = None
 
   def mapWidth: Int = gameIns.map.length
   def mapHeight: Int = gameIns.map(0).length
 
   override def setup() = {
-    frameRate(10)
-    textSize(20)
-    menuBox(topX, topY, boxWidth, topHeight, "Money")
-    menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
-    menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
-    menuBox(mWidth, 0, menuWidth, menuHeight, "Towers")
-    menuBox(mWidth, menuHeight, menuWidth, menuHeight, "Messages")
-    //    menuBox(boxWidth * 3, topY, 225, topHeight, "Quit")
+    frameRate(30)
+    menuBox(topX, topY, boxWidth, topHeight, "Money", regular, rYOffset)
+    menuBox(boxWidth, topY, boxWidth, topHeight, "Health", regular, rYOffset)
+    menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave", regular, rYOffset)
+    menuBox(mWidth, 0, menuWidth, menuHeight, "Towers", regular, rYOffset)
+    menuBox(mWidth, menuHeight, menuWidth, menuHeight, "Messages", regular, rYOffset)
+    menuBox(boxWidth * 3, topY, boxWidth / 2, topHeight / 2, "Quit", small, sYOffset)
+    menuBox(boxWidth * 3, topY + (topHeight / 2), boxWidth / 2, topHeight / 2, "Remove tower", small, sYOffset)
     text(player.money.toString, topX + 2, topY + 30 + 60)
     text(player.healthPoints.toString, boxWidth + 2, topY + 30 + 60)
     text(gameIns.waveNr.toString, boxWidth * 2 + 2, topY + 30 + 60)
-
+    //    img = loadImage("resources/grass.png")
   }
 
   override def settings() = {
     size(wWidth, wHeight)
-
   }
 
   override def draw() = {
@@ -80,6 +79,35 @@ class Game extends Helper {
 
   }
 
+  def quit = exit()
+  // Click boxes
+  /**
+   * @param mouseXL Left x coordinate
+   * @param mouseXR Right x coordinate
+   * @param mouseYT Top y coordinate
+   * @param mouseYB Bottom y coordinate
+   * @param callback Function to be called
+   * @return Unit
+   */
+  def mouseBox(mouseXL: Int, mouseXR: Int, mouseYT: Int, mouseYB: Int, callback: Unit) = {
+    if (mouseX > mouseXL && mouseX < mouseXR && mouseY > mouseYT && mouseY < mouseYB) {
+      selectedCell = true
+      if (selectedCell) {
+        callback
+      }
+    }
+  }
+
+  def removeTow() = {
+    if (selectedCell) {
+      gameIns.selectTower(selected)
+      println(gameIns.what)
+      //          gameIns.removeTower(selected)
+      //          gameIns.messages += "Tower Removed"
+      selectedCell = false
+    }
+  }
+
   override def mouseClicked() {
     selected = new Cell(chooseRight(mouseX), chooseRight(mouseY))
 
@@ -97,7 +125,7 @@ class Game extends Helper {
       selectedCell = true
       if (selectedCell) {
         rect(705, 50, 50, 50)
-        what = Some(new BasicTower(selected, this))
+        gameIns.what = Some(new BasicTower(selected, this))
         selectedCell = false
       }
     } else if (mouseX > 755 && mouseX < 805 && mouseY > 50 && mouseY < 100) {
@@ -105,7 +133,7 @@ class Game extends Helper {
       selectedCell = true
       if (selectedCell) {
         rect(755, 50, 50, 50)
-        what = Some(new AdvanceTower(selected, this))
+        gameIns.what = Some(new AdvanceTower(selected, this))
         selectedCell = false
       }
     } else if (mouseX > 0 && mouseX < 700 && mouseY > 0 && mouseY < mHeight) {
@@ -114,27 +142,33 @@ class Game extends Helper {
       selectedCell = true
 
       if (!gameIns.towers.exists(f => f.location == selected.location)) {
-        if (selectedCell && what.isDefined) {
-          println(what.get.location + " before")
-          what.get.cell = selected
-          what.get.location = selected.location
-          println(what.get.location + " after")
-          gameIns.addTower(what.get)
+        if (selectedCell && gameIns.what.isDefined) {
+          println(gameIns.what.get.location + " before")
+          gameIns.what.get.cell = selected
+          gameIns.what.get.location = selected.location
+          println(gameIns.what.get.location + " after")
+          gameIns.addTower(gameIns.what.get)
           gameIns.messages += "Tower Added"
           selectedCell = false
-          what = None
+          gameIns.what = None
         }
       } else {
         // Selecting a tower
         if (selectedCell) {
-          gameIns.removeTower(selected)
-          gameIns.messages += "Tower Removed"
+          gameIns.selectTower(selected)
           selectedCell = false
         }
       }
+    } else if (mouseX > boxWidth * 3 && mouseX < (boxWidth * 3 + boxWidth / 2) && mouseY > (topY + (topHeight / 2)) && mouseY < wHeight) {
+      gameIns.removeTower()
+    } else if (mouseX > (boxWidth * 3 + boxWidth / 2) && mouseX < (wWidth) && mouseY > (topY + (topHeight / 2)) && mouseY < wHeight) {
+      gameIns.upgrade()
+    } else if (mouseX > boxWidth * 3 && mouseX < boxWidth * 3 + (boxWidth / 2) && mouseY > topY && mouseY < (topY + (topHeight / 2))) {
+      exit()
     } else {
       selectedCell = false
     }
+    //    mouseBox(3 * boxWidth, 3 * boxWidth + (boxWidth / 2).toInt, topY, topY + (topY / 2).toInt, quit)
   }
 
   def chooseRight(which: Int) = {
@@ -149,7 +183,7 @@ class Game extends Helper {
 
   private def drawCell(cell: Cell): Unit = {
     //    val icon = loadImage("resources/grass.png")
-    //    icon.resize(50, 50)
+    //   icon.resize(50, 50)
     gameIns.cellToMap.cellType(cell) match {
       case GenerateCell =>
         fill(100, 255, 100) // Color: Green
@@ -164,17 +198,18 @@ class Game extends Helper {
       case _ =>
         fill(255, 255, 255) // Color: White
         rect(cell.x * cellSize, cell.y * cellSize, cellSize, cellSize)
-      //        image(icon, cell.x, cell.y)
+      //        image(img, cell.x, cell.y)
     }
   }
 
   private def drawMenu(): Unit = {
-    menuBox(topX, topY, boxWidth, topHeight, "Money")
-    menuBox(boxWidth, topY, boxWidth, topHeight, "Health")
-    menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave")
-    menuBox(mWidth, 0, menuWidth, menuHeight, "Towers")
-    menuBox(mWidth, menuHeight, menuWidth, menuHeight, "Messages")
-    //    menuBox(boxWidth * 3, topY, 200, topHeight, "Quit")
+    menuBox(topX, topY, boxWidth, topHeight, "Money", regular, rYOffset)
+    menuBox(boxWidth, topY, boxWidth, topHeight, "Health", regular, rYOffset)
+    menuBox(boxWidth * 2, topY, boxWidth, topHeight, "Wave", regular, rYOffset)
+    menuBox(mWidth, 0, menuWidth, menuHeight, "Towers", regular, rYOffset)
+    menuBox(mWidth, menuHeight, menuWidth, menuHeight, "Messages", regular, rYOffset)
+    //    menuBox(boxWidth * 3, topY + (topHeight / 2), boxWidth / 2, topHeight / 2, "Remove tower", small, sYOffset)
+    menuBox(boxWidth * 3 + (boxWidth / 2).toInt, topY + (topHeight / 2), boxWidth / 2, topHeight / 2, ("Upgrade\n cost " + gameIns.currentUpgradeCost), small, sYOffset)
 
     fill(13, 255, 0)
     rect(boxWidth * 3 + 5, topY + 100, cellSize, cellSize)

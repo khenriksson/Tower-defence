@@ -31,7 +31,8 @@ class UnitTests extends AnyFunSuite {
 
   test("Adding and removing a tower should assert the towers empty") {
     game.gameIns.addTower(tower)
-    game.gameIns.removeTower(cell)
+    game.gameIns.selectTower(cell)
+    game.gameIns.removeTower()
     assert(game.gameIns.towers.isEmpty)
   }
 
@@ -41,18 +42,29 @@ class UnitTests extends AnyFunSuite {
     assert(attacker.healthPoints == (attackerHealth - tower.attackDamage))
   }
 
-  //  test("Map should be of correct size") {
-  //    cancel()
-  //    val src = Source.fromFile("resources/gamemaps/first.txt")
-  //    var check: Int = 0
-  //    var firstLine: Int = 0
-  //    try {
-  //      check = src.getLines.size
-  //    } finally {
-  //      src.close()
-  //    }
-  //    assert(check == game.gameIns.map.length && game.gameIns.map(0).length == 15)
-  //  }
+  test("Tower is upgraded and level changed") {
+    val before = (tower.attackDamage, tower.range)
+    val levelBefore = tower.level
+    game.gameIns.addTower(tower)
+    game.gameIns.selectTower(cell)
+    game.gameIns.upgrade()
+    assert(tower.attackDamage > before._1 && tower.range > before._2 && tower.level > levelBefore)
+  }
+
+  test("Player takes damage when attackers attack") {
+    val before = Player.healthPoints
+    attacker.attack()
+    assert(before > Player.healthPoints)
+  }
+
+  test("Tower is not upgraded when player money isn't enough") {
+    val levelBefore = tower.level
+    game.gameIns.player.money = 11
+    game.gameIns.addTower(tower)
+    game.gameIns.selectTower(cell)
+    game.gameIns.upgrade()
+    assert(tower.level == levelBefore)
+  }
 
   test("Test all maps") {
     val files = FileReader.getListOfFiles("resources/gamemaps")
@@ -60,7 +72,6 @@ class UnitTests extends AnyFunSuite {
     files.foreach({
       f =>
         try {
-          println(f.length + " f.length")
           val save = Buffer[Array[Char]]()
           val bufferedSource = Source.fromFile(f)
           for (line <- bufferedSource.getLines()) {

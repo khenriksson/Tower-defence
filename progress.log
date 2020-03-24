@@ -1,0 +1,14 @@
+Second Report for Tower Defence
+Kasper Henriksson
+647214
+
+All of the basics have been implemented during the past few weeks, and the attackers are now able to move along the screen and the algorithm decides which route they should take. The cells have an underlying abstract class that is either a Route, Target or GenerateCell, where the attackers then check what the next one is. I have also implemented two different towers, and the possibility to upgrade them.
+
+All functions that I have made have been unit tested, and there’s also a unit test for checking the size of different “player made” maps, and if I happen to have the time I will create a UI for players to create their own maps.
+
+The biggest problems that I have now faced is regarding the projectiles, to get them to be shown on the screen, and that the game is kind of too fast-paced right now. I’d like it to be a little bit slower, but if it doesn’t affect the grading then I will not change it.
+
+60h used for now, and I do think I’m ahead of time but I would like to make graphics changes to it.
+
+A preview of the game can be checked out here: https://vimeo.com/400165513 with the password: towerdefence
+

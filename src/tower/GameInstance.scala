@@ -16,34 +16,43 @@ class GameInstance {
   var towers: Buffer[Tower] = Buffer[Tower]()
   var waveNr = 1
   var spawn = cellToMap.generateCell
-  var gßmeOver: Boolean = false
+  var gameOver: Boolean = false
   var fires = Buffer[Fire]()
+  var what: Option[Tower] = None
+
+  def currentUpgradeCost: String = if (what.isDefined) (what.get.levelsMapped(what.get.level)).toString else ""
 
   def deleteMessage() = {
-    if (messages.length > 13) {
-      //      println(messages.length)
+    if (messages.length > 12) {
       messages.remove(0)
     }
   }
 
   def addTower(tower: Tower) {
-    //    println("To X  " + to.x + "   To Y  " + to.y)
     // Check if enough money
     var towerCell = cellToMap.getCell(tower.cell).isInstanceOf[TowerCell]
     if (towerCell && player.money - tower.price >= 0) {
       // Remove money
       player.removeMoney(tower)
       towers += tower
-      //      println(tower.name)
     } else {
       messages += "Not enough money"
     }
   }
 
-  def removeTower(from: Cell) {
+  def removeTower() {
+    if (what.isDefined) {
+      player.money += (what.get.price * 0.8).toInt
+      towers = towers.filter(p => p.location != what.get.location)
+    }
+  }
+
+  def selectTower(from: Cell): Unit = {
     val whichTower = towers.filter(p => p.location == from.location)
-    player.money += (whichTower.last.price * 0.8).toInt
-    towers = towers.filter(p => p.location != from.location)
+    if (whichTower.isDefinedAt(0)) {
+      what = Some(whichTower.last)
+      messages += what.get.location + " selected"
+    } else None
   }
 
   def addAttacker() = {
@@ -55,7 +64,28 @@ class GameInstance {
 
   def removeAttacker(attacker: Attackers) = {
     attackers -= attacker
-    //    player.removeHealth(attacker)
+  }
+
+  def check = what.get.levelsMapped(what.get.level)
+
+  def upgrade() { //
+    if (what.isDefined) {
+      val price = what.get.levelsMapped(what.get.level)
+      val difference = player.money - price
+      if (what.get.level < 3 && difference >= 0) {
+        what.get.attackDamage = (what.get.attackDamage * 2).toInt
+        what.get.range = (what.get.range * 1.5).toInt
+        player.money -= what.get.levelsMapped(what.get.level)
+        what.get.levelUp()
+
+        messages += "Damage upgrade " + what.get.attackDamage
+      } else {
+        messages += "Not enough money"
+      }
+    } else {
+      messages += "No tower selected"
+    }
+    what = None
   }
 
   //  def removeFire(fire: Fire) = {

@@ -7,11 +7,15 @@ import scala.collection.mutable.Buffer
 
 class AdvanceTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   val name = "advance"
-  val price: Int = 10
+  val price: Int = 20
   val healthPoints: Int = 100
-  val range: Int = 100
   val attackSpeed: Int = 10
-  val attackDamage: Int = 10
+  val levelsMapped = Map(0 -> (price * 1.3).toInt, 1 -> (price * 1.5).toInt, 2 -> (price * 1.7).toInt)
+
+  // Modified variables
+  var attackDamage: Int = 20
+  var range: Int = 100
+  var level: Int = 0
 
   def display() {
     sketch.fill(0, 153, 0)
@@ -20,9 +24,7 @@ class AdvanceTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   def fire(fire: Fire) = ???
 
   def attack(attacker: Attackers) = {
-    if (cell.distance(attacker.cell) < range) {
-      attacker.healthPoints -= attackDamage
-    }
+    attacker.takingDamage(this)
   }
 
 }

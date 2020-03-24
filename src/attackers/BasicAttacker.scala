@@ -9,7 +9,7 @@ import math.abs
 
 class BasicAttacker(c: Cell) extends Attackers(c) {
   val speed = 5
-  val winning = 20
+  val winning = 12
   val attackDamage = 10
   var course: Int = 0
   var reward = 20

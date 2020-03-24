@@ -9,12 +9,16 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   val name = "basic"
   val price: Int = 10
   val healthPoints: Int = 100
-  val range: Int = 300
-  val attackSpeed: Int = 1
-  val attackDamage: Int = 10
   val icon = "resources/attackers/zombie.png"
+  val attackSpeed: Int = 1
+  val levelsMapped = Map(0 -> (price * 1.3).toInt, 1 -> (price * 1.5).toInt, 2 -> (price * 1.7).toInt)
+
+  var attackDamage: Int = 10
+  var range: Int = 300
+  var level: Int = 0
   var addX = cell.x
   var addY = cell.y
+
   def display() {
     sketch.fill(102, 255, 102)
     sketch.rect(cell.x, cell.y, 50, 50)
