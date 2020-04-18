@@ -24,6 +24,7 @@ abstract class Tower(var cell: Cell, sketch: PApplet) extends Helper {
 
   def display(): Unit
   def fire(fire: Fire): Unit
+  def init(): Unit
 
   override def toString() = {
     "Cell " + cell

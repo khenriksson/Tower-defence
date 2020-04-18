@@ -1,15 +1,18 @@
 package tower
 
-import processing.core.PApplet
+import processing.core.{ PApplet, PImage }
 import gamemaps._
 import attackers._
 import scala.collection.mutable.Buffer
+import java.io.IOException
 
 class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   val name = "basic"
+  val dir = "resources/towers/"
   val price: Int = 10
   val healthPoints: Int = 100
-  val icon = "resources/attackers/zombie.png"
+  var icon: Map[Int, PImage] = Map()
+
   val attackSpeed: Int = 1
   val levelsMapped = Map(0 -> (price * 1.3).toInt, 1 -> (price * 1.5).toInt, 2 -> (price * 1.7).toInt)
 
@@ -19,26 +22,37 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   var addX = cell.x
   var addY = cell.y
 
+  def init() = {
+    try {
+      icon += (0 -> sketch.loadImage(dir + "basic0.png"),
+        1 -> sketch.loadImage(dir + "basic1.png"),
+        2 -> sketch.loadImage(dir + "basic2.png"),
+        3 -> sketch.loadImage(dir + "fire.png"))
+      for (i <- icon) {
+        i._2.resize(50, 50)
+      }
+    } catch {
+      case e: IOException => {
+        sketch.fill(0, 0, 0)
+        sketch.rect(0, 0, wWidth, wHeight)
+      }
+    }
+  }
+
   def display() {
-    sketch.fill(102, 255, 102)
-    sketch.rect(cell.x, cell.y, 50, 50)
+    sketch.image(icon(level), cell.x, cell.y)
   }
 
   def fire(fire: Fire) {
-    sketch.fill(0, 0, 0)
-    sketch.ellipse(fire.x, fire.y, 30, 30)
-
+    sketch.image(icon(3), fire.x, fire.y)
   }
 
   def attack(attacker: Attackers) = {
-    //    println(cell.distance(attacker.cell) + " distance")
-    //    val proj = new Fire(this, target.get)
-    //    proj.findDirection(proj.from, proj.to)
-    //    fire(proj)
+    val fire = new Fire(this, this.target.get)
+    //    if (target.get.cell.distance(this.cell) < range) {
+    this.fire(fire)
     attacker.takingDamage(this)
-    println(attacker.healthPoints)
-    println("inside")
-
+    //    }
   }
 
 }

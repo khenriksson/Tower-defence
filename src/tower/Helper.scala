@@ -1,6 +1,6 @@
 package tower
 
-import processing.core.PApplet
+import processing.core.{ PApplet, PImage }
 import scala.collection.mutable.Buffer
 import java.util.Calendar
 import sprites._
@@ -63,8 +63,8 @@ abstract class Helper extends PApplet {
    */
   def menuBox(x: Int, y: Int, w: Int, h: Int, t: String, size: Int, yOffset: Int) = {
     fill(255, 255, 255)
-    rect(x, y, w, h)
-    fill(235, 52, 52)
+    rect(x, y, w, h, 10)
+    fill(0, 0, 0)
     textSize(size)
     text(t, x + 2, y + yOffset)
   }
@@ -73,6 +73,7 @@ abstract class Helper extends PApplet {
     val now = Calendar.getInstance();
     now.get(Calendar.MINUTE) * 60 + now.get(Calendar.SECOND)
   }
+
 }
 
 abstract class MapCell

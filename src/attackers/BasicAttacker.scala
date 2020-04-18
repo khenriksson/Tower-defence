@@ -8,6 +8,7 @@ import scala.collection.mutable.Buffer
 import math.abs
 
 class BasicAttacker(c: Cell) extends Attackers(c) {
+  val name = "basic"
   val speed = 5
   val winning = 12
   val attackDamage = 10
@@ -15,9 +16,6 @@ class BasicAttacker(c: Cell) extends Attackers(c) {
   var reward = 20
   var healthPoints = 100
   var moving: Boolean = true
-  var foundAttacker = None
-
-  val icon = "resources/attackers/zombie.png"
 
 }
 

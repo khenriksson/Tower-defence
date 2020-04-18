@@ -7,7 +7,33 @@ import java.io.IOException
 import tower._
 import java.io.File
 
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import scala.io.Source
+
 object FileReader {
+
+  def getMaps() = {
+    val files = FileReader.getListOfFiles("resources/gamemaps")
+    val results = Buffer[Array[Array[Char]]]()
+    files.foreach({
+      f =>
+        try {
+          val save = Buffer[Array[Char]]()
+          val bufferedSource = Source.fromFile(f)
+          for (line <- bufferedSource.getLines()) {
+            save += line.toCharArray()
+          }
+          results += save.toArray
+          bufferedSource.close()
+        } catch {
+          case e: FileNotFoundException => println("File not found " + f.getAbsolutePath)
+          case e: IOException           => println("IO exception")
+        }
+    })
+    results
+  }
 
   def parse(directory: String): Array[Array[Char]] = {
     val results = Buffer[Array[Char]]()
@@ -57,8 +83,6 @@ class FileToMap(map: Array[Array[Char]]) {
     a.last
   }
 
-  // Breaks at 650 y
-  // Doesn't break at x
   // This one gets the cellType from the cells directly
   def cellType(cell: Cell): MapCell = {
     cells(cell.x)(cell.y) // 14, 13
