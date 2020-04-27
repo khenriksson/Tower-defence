@@ -3,7 +3,6 @@ package game
 import processing.core.{ PApplet, PImage }
 import attackers._
 import gamemaps._
-import sprites._
 import java.io.IOException
 import tower._
 
