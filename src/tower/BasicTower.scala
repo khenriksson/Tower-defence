@@ -10,18 +10,13 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
   val name = "basic"
   val dir = "resources/towers/"
   val price: Int = 10
-  val healthPoints: Int = 100
-  var icon: Map[Int, PImage] = Map()
-
-  val attackSpeed: Int = 1
   val levelsMapped = Map(0 -> (price * 1.3).toInt, 1 -> (price * 1.5).toInt, 2 -> (price * 1.7).toInt)
 
+  var icon: Map[Int, PImage] = Map()
   var attackDamage: Int = 10
-  var range: Int = 300
   var level: Int = 0
-  var addX = cell.x
-  var addY = cell.y
 
+  // Initializing and loading the images for the tower
   def init() = {
     try {
       icon += (0 -> sketch.loadImage(dir + "basic0.png"),
@@ -39,20 +34,20 @@ class BasicTower(c: Cell, sketch: PApplet) extends Tower(c, sketch) {
     }
   }
 
+  // Displaying the tower
   def display() {
     sketch.image(icon(level), cell.x, cell.y)
   }
 
+  // Fire shown when shooting
   def fire(fire: Fire) {
     sketch.image(icon(3), fire.x, fire.y)
   }
-
-  def attack(attacker: Attackers) = {
+  // Function for attacking enemies
+  def attack() = {
     val fire = new Fire(this, this.target.get)
-    //    if (target.get.cell.distance(this.cell) < range) {
     this.fire(fire)
-    attacker.takingDamage(this)
-    //    }
+    target.get.takingDamage(this)
   }
 
 }

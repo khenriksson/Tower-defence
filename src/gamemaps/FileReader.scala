@@ -1,19 +1,24 @@
 package gamemaps
 
-import scala.io.Source
-import scala.collection.mutable.Buffer
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import tower._
-import java.io.File
 
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
+import scala.collection.mutable.Buffer
 import scala.io.Source
+
+import game.GenerateCell
+import game.MapCell
+import game.Route
+import game.Target
+import game.TowerCell
 
 object FileReader {
 
+  /**
+   * Used to find all the maps in the current resources
+   * @return array containing all the maps and how their printed
+   */
   def getMaps() = {
     val files = FileReader.getListOfFiles("resources/gamemaps")
     val results = Buffer[Array[Array[Char]]]()
@@ -35,6 +40,11 @@ object FileReader {
     results
   }
 
+  /**
+   * Parses from text file to array to array
+   * @param directory the directory where we want to parse
+   * @return array of the map
+   */
   def parse(directory: String): Array[Array[Char]] = {
     val results = Buffer[Array[Char]]()
     try {
@@ -50,6 +60,11 @@ object FileReader {
     results.toArray
   }
 
+  /**
+   * Gets list of file in the directory, used when parsing the maps
+   * @param dir directory where .txt files are
+   * @return List[File] list of files in the directory
+   */
   def getListOfFiles(dir: String): List[File] = {
     val d = new File(dir)
     if (d.exists && d.isDirectory) {
@@ -72,6 +87,10 @@ class FileToMap(map: Array[Array[Char]]) {
     case '2' => Target
   })
 
+  /**
+   * Yields the spawncell for the attackers
+   * @return spawncell
+   */
   def generateCell = {
     val a = for {
       x <- 0 until width
@@ -80,14 +99,14 @@ class FileToMap(map: Array[Array[Char]]) {
     } yield {
       new Cell(x, y)
     }
-    a.last
+    a(0)
   }
 
   // This one gets the cellType from the cells directly
   def cellType(cell: Cell): MapCell = {
     cells(cell.x)(cell.y) // 14, 13
   }
-
+  // This one converts Processing coordinates to index in array
   def getCell(cell: Cell): MapCell = {
     cells(cell.x / 50)(cell.y / 50)
   }

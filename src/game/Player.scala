@@ -1,10 +1,10 @@
-package tower
+package game
 import attackers._
+import tower._
 
-object Player extends Helper {
+object Player {
   var healthPoints = 100
   var money = 40
-  var score = 0
 
   def isAlive = {
     (Player.healthPoints > 0)
@@ -16,11 +16,6 @@ object Player extends Helper {
 
   def removeMoney(tower: Tower) = {
     money -= tower.price
-  }
-
-  def removeHealth(attacker: Attackers) = {
-    println(healthPoints + "   healthpoints")
-    healthPoints -= attacker.attackDamage
   }
 
 }

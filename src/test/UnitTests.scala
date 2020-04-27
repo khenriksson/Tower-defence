@@ -11,6 +11,9 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import scala.io.Source
 import scala.collection.mutable.Buffer
+import game.Route
+import game.Game
+import game.Player
 
 class UnitTests extends AnyFunSuite {
   val game = new Game
@@ -43,12 +46,12 @@ class UnitTests extends AnyFunSuite {
   }
 
   test("Tower is upgraded and level changed") {
-    val before = (tower.attackDamage, tower.range)
+    val before = tower.attackDamage
     val levelBefore = tower.level
     game.gameIns.addTower(tower)
     game.gameIns.selectTower(cell)
     game.gameIns.upgrade()
-    assert(tower.attackDamage > before._1 && tower.range > before._2 && tower.level > levelBefore)
+    assert(tower.attackDamage > before && tower.level > levelBefore)
   }
 
   test("Player takes damage when attackers attack") {
@@ -66,7 +69,7 @@ class UnitTests extends AnyFunSuite {
     assert(tower.level == levelBefore)
   }
 
-  test("Test all maps") {
+  test("Test all maps length and width") {
     val files = FileReader.getListOfFiles("resources/gamemaps")
     val results = Buffer[Buffer[Array[Char]]]()
     files.foreach({

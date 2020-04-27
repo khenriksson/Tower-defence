@@ -4,7 +4,7 @@ import attackers._
 
 class Fire(val from: Tower, var to: Attackers) {
 
-  var x: Int = from.cell.x
-  var y: Int = from.cell.y
+  def x: Int = from.cell.x
+  def y: Int = from.cell.y
 
 }
